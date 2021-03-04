@@ -1,6 +1,7 @@
 package gui;
 
-import auxiliary.Duplet;
+import logic.Duplet;
+import control.Controller;
 import logic.ColorType;
 import logic.Chessman;
 import logic.ChessmanType;
@@ -9,7 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.Set;
 
 /**
  * The graphics user interface of the chess game.
@@ -17,6 +17,7 @@ import java.util.Set;
 public class GUI {
     private static final int CHESS_LENGTH = 8;
     private static final Color COLOR_DEFAULT;
+    private static final int WINDOW_SIZE = 500;
     static {
         JButton b = new JButton();
         COLOR_DEFAULT = b.getBackground();
@@ -30,6 +31,8 @@ public class GUI {
     ChessButton[][] chessCell;
     ChessButton parentCell;
 
+    Controller controller;
+
     /**
      * This is a button that represents a cell (box) of the chess panel.
      */
@@ -37,15 +40,18 @@ public class GUI {
         Chessman chessman;
         boolean isClicked;
 
+        private int x, y;
+
         private ChessButton(Chessman chessman) {
             super();
             this.chessman = chessman;
             isClicked = false;
             setBackground(COLOR_DEFAULT);
+            this.x = chessman.getCoords().getX();
+            this.y = chessman.getCoords().getY();
         }
 
         private Chessman getChessman() { return chessman; }
-
         private void setChessman(Chessman chessman) { this.chessman = chessman; }
     }
 
@@ -77,6 +83,7 @@ public class GUI {
             public void mouseClicked (MouseEvent e) {
                 ChessButton thisCell = (ChessButton) e.getSource();
                 ArrayList<Duplet> moves = _getMoves(thisCell.getChessman());
+               // ArrayList<Duplet> moves = controller.getMoves(thisCell.getChessman());
 
                 if (thisCell.isClicked) {  //It is going to release a button.
                     thisCell.setBackground(COLOR_DEFAULT);
@@ -106,6 +113,8 @@ public class GUI {
                         colorizeAdjacent(moves);
                     }
                 } else {  //A player tries to move a piece to thisButton.
+                  //  if (controller.moveChessman(parentCell.x, parentCell.y, thisCell.x, thisCell.y))
+                    //    showTable();
                     if(moveChessman(thisCell))
                         pcTurn = true;
                 }
@@ -134,7 +143,7 @@ public class GUI {
             add(label,BorderLayout.NORTH);
             add(table);
             //setup frame
-            setSize(500,500);
+            setSize(WINDOW_SIZE,WINDOW_SIZE);
             setResizable(false);
             setDefaultCloseOperation(EXIT_ON_CLOSE);
         }
@@ -238,6 +247,8 @@ public class GUI {
         aButtonIsOn = false;
         keepPlaying = true;
         pcTurn = false;
+
+        controller = new Controller();
 
         Timer myTimer = new Timer(100,null);
         myTimer.setRepeats(false);
@@ -516,4 +527,15 @@ public class GUI {
         return moves;
     }
 
+
+    private void showTable() {
+        Chessman[][] chessmen = controller.getTable().getChessmen();
+        System.out.println("---------------");
+        for (int i = 0; i < CHESS_LENGTH; i++) {
+            for (int j = 0; j < CHESS_LENGTH; j++) {
+                System.out.print(chessmen[i][j].getType().getId() + " ");
+            }
+            System.out.println();
+        }
+    }
 }

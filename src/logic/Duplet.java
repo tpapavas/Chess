@@ -1,4 +1,4 @@
-package auxiliary;
+package logic;
 
 import java.util.Objects;
 
