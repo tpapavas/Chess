@@ -1,2 +1,2 @@
 # Chess
- A Java chess game
+ A Java chess game (unfinished)
